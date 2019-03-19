@@ -1,22 +1,32 @@
 import gym
 import random
+import numpy as np
+from tqdm import tqdm
 env = gym.make('CartPole-v0')
 env.reset()
 
 
-num_partidas = 100
-score_minimo = 50
-partidas = []
+def PartidasRandom(num_partidas = 2000, score_minimo = 50):
+    partidas_train = []
+    for _ in range(num_partidas):
+        done = False
+        observation = env.reset()
+        movimientos_partida = []
+        observations_partida = []
+        score_partida = 0
+        while not done: #Jugando la partida
+            observations_partida.append(observation)
+            action = random.randint(0,1)
+            observation, reward, done, info = env.step(action)
+            movimientos_partida.append(action)
+            score_partida += reward
 
 
-for _ in range(num_partidas):
-    done = False
-    cur_observation = env.reset()
-    observations_partida = [cur_observation]
-    movimientos_partida = []
-    scores_partida = []
-    while not done: #Jugando al partida
-        action = random.randint(0,1)
-        observation, reward, done, info = env.step(action)
-        movimientos_partida.append(action)
-        scores_partida.append(reward)
+        if score_partida >= score_minimo:
+            partidas_train.append({"observations": observations_partida,
+                                   "movimientos": movimientos_partida,
+                                   "score": score_partida})
+    return partidas_train
+
+
+partidas_train = PartidasRandom(num_partidas = 50000)
