@@ -1,6 +1,7 @@
 import gym
 import math
 import random
+import tensorflow as tf
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -211,7 +212,7 @@ def optimize_model():
     optimizer.step()
 
 
-num_episodes = 50
+num_episodes = 500
 for i_episode in range(num_episodes):
     # Initialize the environment and state
     env.reset()
