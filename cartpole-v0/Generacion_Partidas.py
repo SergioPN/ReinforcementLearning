@@ -2,11 +2,12 @@ import gym
 import random
 import numpy as np
 from tqdm import tqdm
-env = gym.make('CartPole-v0')
-env.reset()
+
 
 
 def PartidasRandom(num_partidas = 2000, score_minimo = 50):
+    env = gym.make('CartPole-v0')
+    env.reset()
     partidas_train = []
     for _ in range(num_partidas):
         done = False

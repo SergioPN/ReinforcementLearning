@@ -1,9 +1,15 @@
+"""
+Este modelo entrena una red de capas densas
+"""
+
+# %%
 import tensorflow as tf
 import gym
 from tensorflow import keras
 from keras.callbacks import TensorBoard
 from Generacion_Partidas import PartidasRandom
 from keras.utils import to_categorical
+from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 from time import time
 
@@ -11,16 +17,16 @@ from time import time
 
 def BuildModel(input_size, outputs = 2):
     model = keras.Sequential([
-        keras.layers.Dense(128, activation=tf.nn.relu, input_shape = (input_size, )),
-        keras.layers.Dropout(0.8),
-        keras.layers.Dense(256, activation=tf.nn.relu),
-        keras.layers.Dropout(0.8),
-        keras.layers.Dense(512, activation=tf.nn.relu),
-        keras.layers.Dropout(0.8),
-        keras.layers.Dense(256, activation=tf.nn.relu),
-        keras.layers.Dropout(0.8),
+        keras.layers.Dense(32, activation=tf.nn.relu, input_shape = (input_size, )),
+        keras.layers.Dropout(0.2),
+        keras.layers.Dense(64, activation=tf.nn.relu),
+        keras.layers.Dropout(0.2),
         keras.layers.Dense(128, activation=tf.nn.relu),
-        keras.layers.Dropout(0.8),
+        keras.layers.Dropout(0.2),
+        keras.layers.Dense(64, activation=tf.nn.relu),
+        keras.layers.Dropout(0.2),
+        keras.layers.Dense(32, activation=tf.nn.relu),
+        keras.layers.Dropout(0.2),
         keras.layers.Dense(outputs, activation=tf.nn.softmax)
     ])
 
@@ -30,29 +36,29 @@ def BuildModel(input_size, outputs = 2):
 
     return model
 
-def TrainModel(training_data, model=False):
+def TrainModel(training_data):
 
     obs = np.array([obs for data in partidas_train for obs in data["observations"]])
     mov = np.array([obs for data in partidas_train for obs in data["movimientos"]])
     mov = to_categorical(mov)
 
-    if not model:
-        print("Starting a new model")
-        model = BuildModel(input_size = 4)
+    # if not model:
+    #     print("Starting a new model")
+    #     model = BuildModel(input_size = 4)
 
     # tensorboard = TensorBoard(log_dir="logs/{}".format(time())) # tensorboard --logdir=logs
 
     model.fit(obs, mov,
-              epochs = 5,
+              epochs = 50,
               batch_size = 128,
               callbacks=[])
 
     return model
 
 
-partidas_train = PartidasRandom(num_partidas = 100000, score_minimo = 70)
+partidas_train = PartidasRandom(num_partidas = 5000000, score_minimo = 180)
 
-len(partidas_train)
+
 model = TrainModel(partidas_train)
 
 
